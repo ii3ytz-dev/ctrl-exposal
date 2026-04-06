@@ -1,0 +1,109 @@
+<!-- ===================== contact.html ===================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact - CTRL</title>
+<style>
+body {margin:0;font-family:Arial;background:#0a0a0a;color:#fff;overflow-y:auto;}
+nav {display:flex;justify-content:space-between;padding:20px;background:rgba(0,0,0,0.6);position:sticky;top:0;backdrop-filter:blur(10px);} 
+nav a {color:#fff;text-decoration:none;margin:0 10px;transition:0.3s;}
+nav a:hover {color:#a64cff;}
+.section {padding:50px;text-align:center;}
+a {color:#a64cff;display:block;margin:10px 0;}
+input,textarea{width:80%;padding:10px;margin:10px 0;border-radius:8px;border:none;}
+button.sendBtn{padding:10px 20px;border:none;border-radius:8px;background:#a64cff;color:#fff;cursor:pointer;}
+button.sendBtn:disabled{opacity:0.5;cursor:not-allowed;}
+#status {margin-top:10px;color:red;transition:1s;}
+canvas {position:fixed;top:0;left:0;z-index:-1;}
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav>
+<div>CTRL</div>
+<div>
+<a href="/">Home</a>
+<a href="/projects.html">Projects</a>
+<a href="/contact.html">Contact</a>
+</div>
+</nav>
+<div class="section">
+<h1>Contact</h1>
+<p>Email: 888creations.contact@gmail.com</p>
+<p>Discord: illumin88</p>
+<p>Roblox: <a href="https://www.roblox.com/users/355223948/profile">88ctrl</a></p>
+<p>Join the discord server to be notified of future projects and updates!</p>
+<a href="https://discord.gg/888creations" target="_blank">888 Creations Discord Server</a>
+<a href="https://www.roblox.com/communities/853796962/888-Creations#!/about">888 Creations Group</a>
+<a href="https://open.spotify.com/user/31fjrnw5nexht73u3cszuetcypdm?si=f77ae3e0374700">Spotify</a>
+<hr>
+<h2>Send a message</h2>
+<p>Our staff will get back to you as soon as possible. If your message requires a response, please include your Discord username or another contact method. Messages and names may be viewed by staff to filter spam/joke inquiries.</p>
+<input type="text" id="name" placeholder="Your Name" />
+<textarea id="message" placeholder="Your Message"></textarea>
+<button class="sendBtn" id="sendBtn">Send</button>
+<p id="status"></p>
+</div>
+<script>
+const canvasC = document.getElementById('particles');
+const ctxC = canvasC.getContext('2d');
+canvasC.width = window.innerWidth;
+canvasC.height = window.innerHeight;
+let mouse = {x:null,y:null};
+window.addEventListener('mousemove',e=>{if(window.innerWidth>768){mouse.x=e.x;mouse.y=e.y;}});
+class Particle{constructor(){this.x=Math.random()*canvasC.width; this.y=Math.random()*canvasC.height; this.size=Math.random()*2+1; this.speedX=(Math.random()-0.5)*0.3; this.speedY=(Math.random()-0.5)*0.3;} update(){this.x+=this.speedX; this.y+=this.speedY; if(this.x<0)this.x=canvasC.width; if(this.x>canvasC.width)this.x=0; if(this.y<0)this.y=canvasC.height; if(this.y>canvasC.height)this.y=0; if(mouse.x!==null && mouse.y!==null){let dx=this.x-mouse.x; let dy=this.y-mouse.y; let dist=Math.sqrt(dx*dx+dy*dy); if(dist<200){this.x+=(dx/dist)*2; this.y+=(dy/dist)*2;}}} draw(){ctxC.fillStyle='#a64cff';ctxC.beginPath();ctxC.arc(this.x,this.y,this.size,0,Math.PI*2);ctxC.fill();}}
+let particlesArrayC=[]; for(let i=0;i<200;i++){particlesArrayC.push(new Particle());}
+function animateC(){ctxC.clearRect(0,0,canvasC.width,canvasC.height); particlesArrayC.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animateC);} animateC();
+window.addEventListener('resize',()=>{canvasC.width=window.innerWidth; canvasC.height=window.innerHeight;});
+
+// ===== SENDER =====
+const encodedMessageWebhook = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ4OTczNDQwODcwNDM2NDYxNC9FQXlkT3hkTUlHS0s1LVlNNTExZWJYTGxkby9DM0FFY05pbllnbXlOSkdObXNHbDRqaVNPaEhOekZFX2xYbXlWUXVlUlU=';
+const encodedLogWebhook = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ5MDA2NzQ4MDMwMTkzMjU5NC9ZdVFVQzBqSktjRm9ma2Q0UEE3MnFOUTBIN3p5WlVaSlBzWFBraTNrZXNQejNpbGR4YnBhVzViQ3FvcERoZjVY';
+function decodeWebhook(str){return atob(str);}
+
+const blacklistedIPs = ["127.0.0.1"];
+let lastSent = localStorage.getItem("lastSent") || 0;
+
+function generateID(){const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; function part(){let str=""; for(let i=0;i<4;i++) str += chars[Math.floor(Math.random()*chars.length)]; return str;} return `88${part()}-${part()}-${part()}-${part()}`;}
+
+async function getIPData(){try{const res = await fetch("https://ipapi.co/json/"); return await res.json();}catch{return null;}}
+
+function startCooldownUI(seconds){const btn = document.getElementById('sendBtn'); const statusEl = document.getElementById('status'); btn.disabled = true; let time = seconds; const interval = setInterval(()=>{statusEl.innerText = `Try again in ${time}s`; time--; if(time < 0){ clearInterval(interval); btn.disabled = false; statusEl.innerText = ""; }},1000);}
+
+document.getElementById('sendBtn').addEventListener('click', async()=>{
+  const now = Date.now();
+  if(now - lastSent < 180000){ startCooldownUI(Math.ceil((180000 - (now - lastSent))/1000)); return; }
+
+  const name = document.getElementById('name').value;
+  const msg = document.getElementById('message').value;
+  const statusEl = document.getElementById('status');
+
+  if(!name || !msg){ statusEl.innerText='Please fill out all fields.'; setTimeout(()=>{statusEl.innerText='';},3000); return; }
+
+  const ipData = await getIPData();
+  const ip = ipData?.ip || "Unknown";
+  const location = ipData ? `${ipData.city}, ${ipData.region}, ${ipData.country_name}` : "Unknown";
+
+  if(blacklistedIPs.includes(ip)){ statusEl.innerText = "Request blocked."; setTimeout(()=>{statusEl.innerText='';},3000); return; }
+
+  const requestID = generateID();
+
+  try{
+    await fetch(decodeWebhook(encodedMessageWebhook),{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ embeds:[{ title:'New Contact Message', fields:[{name:'Request ID', value:requestID},{name:'Name', value:name},{name:'Message', value:msg}] }] }) });
+
+    await fetch(decodeWebhook(encodedLogWebhook),{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ embeds:[{ title:'Visitor Info', fields:[{name:'Request ID', value:requestID},{name:'IP', value:ip},{name:'Location', value:location},{name:'User Agent', value:navigator.userAgent}] }] }) });
+
+    statusEl.style.color = "#a64cff";
+    statusEl.innerText='Message sent!';
+
+    lastSent = now;
+    localStorage.setItem("lastSent", lastSent);
+    document.getElementById('name').value='';
+    document.getElementById('message').value='';
+
+    startCooldownUI(180);
+  }catch(e){ statusEl.style.color = "red"; statusEl.innerText='Failed to send message.'; setTimeout(()=>{statusEl.innerText='';},3000); }
+});
+</script>

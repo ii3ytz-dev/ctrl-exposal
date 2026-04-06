@@ -1,0 +1,85 @@
+<!-- ===================== projects.html ===================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects - CTRL</title>
+<style>
+body {margin:0;font-family:Arial;background:#0a0a0a;color:#fff;overflow-y:auto;}
+html {scroll-behavior:smooth;}
+nav {display:flex;justify-content:space-between;padding:20px;background:rgba(0,0,0,0.6);position:sticky;top:0;backdrop-filter:blur(10px);} 
+nav a {color:#fff;text-decoration:none;margin:0 10px;transition:0.3s;}
+nav a:hover {color:#a64cff;}
+.section {padding:50px;text-align:center;}
+.card {border:1px solid #333;padding:20px;margin:20px;transition:0.3s;}
+.card:hover {transform:scale(1.05);border-color:#a64cff;box-shadow:0 0 20px #a64cff;}
+a {color:#a64cff;display:block;margin:10px 0;}
+canvas {position:fixed;top:0;left:0;z-index:-1;}
+.scroll-indicator {position:fixed;bottom:20px;left:50%;transform:translateX(-50%);font-size:24px;color:gray;animation: bounce 1.5s infinite;}
+.scroll-top {position:fixed;top:20px;left:50%;transform:translateX(-50%);font-size:24px;color:gray;cursor:pointer;display:none;}
+@keyframes bounce {0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,10px);}}
+@media(max-width:768px){.card{margin:15px;padding:15px;}} 
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav>
+<div>CTRL</div>
+<div>
+<a href="/">Home</a>
+<a href="/projects.html">Projects</a>
+<a href="/contact.html">Contact</a>
+</div>
+</nav>
+<div class="section">
+<h1>Projects</h1>
+<div class="card">
+<h2>888 Creations</h2>
+<p>Owner & Developer</p>
+<p>Join the discord server to be notified of future projects and updates!</p>
+<a href="https://discord.gg/888creations" target="_blank">Discord Server</a>
+<a href="https://www.roblox.com/communities/853796962/888-Creations#!/about" target="_blank">View Group</a>
+</div>
+<div class="card">
+<h2>Dash Enterprises</h2>
+<p>Head of Creative Enhancement</p>
+</div>
+<div class="card">
+<h2>Bright Games Studios</h2>
+<p>QA Tester</p>
+<a href="https://www.roblox.com/communities/13081182/Bright-Games-Studios#!/about" target="_blank">View Group</a>
+</div>
+<div class="card">
+<h2>Line to Tung Tung Tung Sahur</h2>
+<a href="https://www.roblox.com/games/118567992246249/Line-to-Tung-Tung-Tung-Sahur" target="_blank">Play Game</a>
+</div>
+<div class="card">
+<h2>SOLITARY</h2>
+<a href="https://www.roblox.com/games/83875409511924/SOLITARY" target="_blank">Play Game</a>
+</div>
+<div class="card">
+<h2>SUPERCELL</h2>
+<a href="https://www.roblox.com/games/99679741345872/SUPERCELL" target="_blank">Play Game</a>
+</div>
+<div class="scroll-indicator">↓ Scroll Down ↓</div>
+<div class="scroll-top" id="scrollTop">↑ Scroll Up ↑</div>
+<script>
+const scrollTop = document.getElementById('scrollTop');
+window.addEventListener('scroll', ()=>{
+  scrollTop.style.display = window.scrollY > 100 ? 'block' : 'none';
+});
+scrollTop.addEventListener('click', ()=>{window.scrollTo({top:0, behavior:'smooth'});});
+</script>
+<script>
+const canvasP = document.getElementById('particles');
+const ctxP = canvasP.getContext('2d');
+canvasP.width = window.innerWidth;
+canvasP.height = window.innerHeight;
+let mouseP = {x:null, y:null};
+window.addEventListener('mousemove', e=>{if(window.innerWidth>768){mouseP.x=e.x; mouseP.y=e.y;}});
+class Particle{constructor(){this.x=Math.random()*canvasP.width; this.y=Math.random()*canvasP.height; this.size=Math.random()*2+1; this.speedX=(Math.random()-0.5)*0.3; this.speedY=(Math.random()-0.5)*0.3;} update(){this.x+=this.speedX; this.y+=this.speedY; if(this.x<0)this.x=canvasP.width; if(this.x>canvasP.width)this.x=0; if(this.y<0)this.y=canvasP.height; if(this.y>canvasP.height)this.y=0; if(mouseP.x!==null && mouseP.y!==null){let dx=this.x-mouseP.x; let dy=this.y-mouseP.y; let dist=Math.sqrt(dx*dx+dy*dy); if(dist<200){this.x+=(dx/dist)*2; this.y+=(dy/dist)*2;}}} draw(){ctxP.fillStyle='#a64cff';ctxP.beginPath();ctxP.arc(this.x,this.y,this.size,0,Math.PI*2);ctxP.fill();}}
+let particlesArrayP=[]; for(let i=0;i<200;i++){particlesArrayP.push(new Particle());}
+function animateP(){ctxP.clearRect(0,0,canvasP.width,canvasP.height); particlesArrayP.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animateP);} animateP();
+window.addEventListener('resize',()=>{canvasP.width=window.innerWidth; canvasP.height=window.innerHeight;});
+</script>
